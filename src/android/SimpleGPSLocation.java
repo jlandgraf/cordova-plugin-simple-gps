@@ -219,13 +219,17 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		boolean network_enabled;
 		try {
 			gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-			network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			gps_enabled = false;
-			network_enabled = false;
 		}
 
+		try {
+			network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			network_enabled = false;
+		}
 		return gps_enabled || network_enabled;
 	}
 
