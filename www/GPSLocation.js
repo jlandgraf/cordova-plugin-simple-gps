@@ -67,7 +67,7 @@ function createTimeout(errorCallback, timeout) {
 	return t;
 }
 
-var GPSLocation = {
+var SimpleGPSLocation = {
 	lastPosition: null, // reference to last known (cached) position returned
 	/**
 	 * Asynchronously acquires the current position.
@@ -170,4 +170,4 @@ var GPSLocation = {
 	},
 };
 
-module.exports = GPSLocation;
+module.exports = SimpleGPSLocation;
