@@ -287,7 +287,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	    if(_context != null) {
 	        for (int r : grantResults) {
 	            if (r == PackageManager.PERMISSION_DENIED) {
-	                Log.d(LocationUtils.APPTAG, "Permission Denied!");
+	                Log.d(TAG, "Permission Denied!");
 	                result = new PluginResult(PluginResult.Status.ILLEGAL_ACCESS_EXCEPTION);
 	                _context.sendPluginResult(result);
 	                return;
