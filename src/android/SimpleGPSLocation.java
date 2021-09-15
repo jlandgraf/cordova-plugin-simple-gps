@@ -53,7 +53,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 
 	private LocationListener mListener;
 	private LocationManager mLocationManager;
-	CallbackContext _context;
+	CallbackContext _context;....
 
 	String [] permissions = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
 
@@ -123,9 +123,6 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	 */
 	public void onDestroy() {
     mLocationManager.removeUpdates(mListener);
-		if (mListener != null) {
-			mListener.destroy();
-		}
 	}
 
 	/**
@@ -253,7 +250,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			mListener = new LocationListener() {
 				@Override
 				public void onLocationChanged(Location location) {
-					Log.d(TAG, "The location has been updated!");
+					Log.d(LocationUtils.APPTAG, "The location has been updated!");
 					win(location);
 				}
 
@@ -266,12 +263,12 @@ public class SimpleGPSLocation extends CordovaPlugin {
 
 				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {
-					Log.d(TAG, "Provider " + provider + " status changed to " + status);
+					Log.d(LocationUtils.APPTAG, "Provider " + provider + " status changed to " + status);
 				}
 
 				@Override
 				public void onProviderEnabled(String provider) {
-					Log.d(TAG, "Provider " + provider + " has been enabled.");
+					Log.d(LocationUtils.APPTAG, "Provider " + provider + " has been enabled.");
 				}
 			};
 		}
