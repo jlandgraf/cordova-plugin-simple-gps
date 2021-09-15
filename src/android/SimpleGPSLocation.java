@@ -16,7 +16,7 @@
        specific language governing permissions and limitations
        under the License.
  */
-package com.coolprofs.cordova.gpslocation;
+package com.coolprofs.cordova.simplegpslocation;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaArgs;
@@ -42,13 +42,16 @@ import android.location.LocationManager;
 
 import android.util.Log;
 
-/*
- * This class is the interface to the Geolocation.  It's bound to the geo object.
- */
+public class SimpleGPSLocation extends CordovaPlugin {
 
-public class CordovaGPSLocation extends CordovaPlugin {
+	public static int PERMISSION_DENIED = 1;
+	public static int POSITION_UNAVAILABLE = 2;
+	public static int TIMEOUT = 3;
 
-	private CordovaLocationListener mListener;
+	private static final long MIN_UPDATE_INTERVAL_IN_MS = 1 * 1000;
+  private static final float MIN_UPDATE_DISTANCE_IN_M = 0;
+
+	private LocationListener mListener;
 	private LocationManager mLocationManager;
 	CallbackContext _context;
 
@@ -79,19 +82,20 @@ public class CordovaGPSLocation extends CordovaPlugin {
 	public boolean execute(final String action, final JSONArray args,
 			final CallbackContext callbackContext) {
 
-		if (action == null || !action.matches("getLocation|addWatch|clearWatch|getPermission")) {
-			fail(99, "unknown action", callbackContext, false);
-			return false;
-		}
-
 		_context = callbackContext;
 		final String id = args.optString(0, "");
+
+		if (action == null || !action.matches("getLocation|getPermission")) {
+			fail(99, "unknown action", false);
+			return false;
+		}
 
 		if(action.equals("getPermission"))
 		{
 		    if(hasLocationPermission())
 		    {
 		        PluginResult r = new PluginResult(PluginResult.Status.OK);
+		        r.setKeepCallback(true);
 		        _context.sendPluginResult(r);
 		        return true;
 		    }
@@ -102,24 +106,14 @@ public class CordovaGPSLocation extends CordovaPlugin {
 		}
 
 
-
-		if (action.equals("clearWatch")) {
-			clearWatch(id);
-			return true;
-		}
-
 		/* only GPS check */
-		if (isGPSdisabled()) {
-				fail(CordovaLocationListener.POSITION_UNAVAILABLE, "GPS is disabled on this device.", _context, false);
+		if (!isProviderEnabled()) {
+				fail(POSITION_UNAVAILABLE, "GPS is disabled on this device.", false);
 				return true;
 		}
 
 		if (action.equals("getLocation")) {
 			getLastLocation(args, _context);
-		//} else if (action.equals("getSimpleLocation")) {
-//			getSimpleLocation(args, _context);
-		} else if (action.equals("addWatch")) {
-			addWatch(id, _context);
 		}
 
 		return true;
@@ -129,6 +123,7 @@ public class CordovaGPSLocation extends CordovaPlugin {
 	 * Called when the activity is to be shut down. Stop listener.
 	 */
 	public void onDestroy() {
+    mLocationManager.removeUpdates(mListener);
 		if (mListener != null) {
 			mListener.destroy();
 		}
@@ -140,6 +135,15 @@ public class CordovaGPSLocation extends CordovaPlugin {
 	public void onReset() {
 		this.onDestroy();
 	}
+
+  @Override
+  protected void onPause() {
+      // Stop location updates while the app is in background
+      mLocationManager.removeUpdates(mListener);
+      super.onPause();
+  }
+
+
 
 	public JSONObject returnLocationJSON(Location loc) {
 		JSONObject o = new JSONObject();
@@ -161,12 +165,11 @@ public class CordovaGPSLocation extends CordovaPlugin {
 		return o;
 	}
 
-	public void win(Location loc, CallbackContext callbackContext,
-			boolean keepCallback) {
+	public void win(Location loc, boolean keepCallback) {
 		PluginResult result = new PluginResult(PluginResult.Status.OK,
 				this.returnLocationJSON(loc));
 		result.setKeepCallback(keepCallback);
-		callbackContext.sendPluginResult(result);
+		_context.sendPluginResult(result);
 	}
 
 	/**
@@ -175,8 +178,7 @@ public class CordovaGPSLocation extends CordovaPlugin {
 	 * @param msg  The error message
 	 * @throws JSONException
 	 */
-	public void fail(int code, String msg, CallbackContext callbackContext,
-			boolean keepCallback) {
+	public void fail(int code, String msg, boolean keepCallback) {
 		JSONObject obj = new JSONObject();
 		String backup = null;
 		try {
@@ -195,22 +197,25 @@ public class CordovaGPSLocation extends CordovaPlugin {
 		}
 
 		result.setKeepCallback(keepCallback);
-		callbackContext.sendPluginResult(result);
+		_context.sendPluginResult(result);
 	}
 
-	private boolean isGPSdisabled() {
+	private boolean isProviderEnabled() {
 		boolean gps_enabled;
+		boolean network_enabled;
 		try {
 			gps_enabled = mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+			network_enabled = mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			gps_enabled = false;
+			network_enabled = false;
 		}
 
-		return !gps_enabled;
+		return gps_enabled || network_enabled;
 	}
 
-	private void getLastLocation(JSONArray args, CallbackContext callbackContext) {
+	private void getLastLocation(JSONArray args) {
 		int maximumAge;
 		boolean useLastLocation;
 		try {
@@ -236,38 +241,49 @@ public class CordovaGPSLocation extends CordovaPlugin {
 
 		// Check if we can use lastKnownLocation to get a quick reading and use
 		// less battery
-		if (last != null) {
-			// we do have something in lastlocation
-			// now we check if we want that or the cache is still fresh enough
-		  if(useLastLocation || ((System.currentTimeMillis() - last.getTime()) <= maximumAge)) {
+		if ((last != null) 
+				&& (useLastLocation || ((System.currentTimeMillis() - last.getTime()) <= maximumAge))) 
+		{
 				PluginResult result = new PluginResult(PluginResult.Status.OK, returnLocationJSON(last));
-				callbackContext.sendPluginResult(result);
-			} else {
-				startListening(callbackContext, Integer.MAX_VALUE);	
-			}
+				_context.sendPluginResult(result);
 		} else {
 				/* start listening */
-				startListening(callbackContext, Integer.MAX_VALUE);	
+				startListening(provider);	
 		}
 	}
 
 
-	private void startListening(CallbackContext callbackContext, int timeout) {
-		getListener().addCallback(callbackContext, timeout);
+	private void startListening(String provider) {
+			createListener();
+	    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
 	}
 
-	private void clearWatch(String id) {
-		getListener().clearWatch(id);
-	}
-	private void addWatch(String timerId, CallbackContext callbackContext) {
-		getListener().addWatch(timerId, callbackContext);
-	}
-
-	private CordovaLocationListener getListener() {
+	private void createListener() {
 		if (mListener == null) {
-			mListener = new CordovaLocationListener(this, LocationUtils.APPTAG);
+			mListener = new LocationListener() {
+				@Override
+				public void onLocationChanged(Location location) {
+					Log.d(TAG, "The location has been updated!");
+					win(location);
+				}
+
+				@Override
+				public void onProviderDisabled(String provider) {
+					if (LocationManager.GPS_PROVIDER.equals(provider)) {
+						fail(POSITION_UNAVAILABLE, "GPS provider has been disabled.");
+					}
+				}
+
+				@Override
+				public void onStatusChanged(String provider, int status, Bundle extras) {
+					Log.d(TAG, "Provider " + provider + " status changed to " + status);
+				}
+
+				@Override
+				public void onProviderEnabled(String provider) {
+					Log.d(TAG, "Provider " + provider + " has been enabled.");
+				}
 		}
-		return mListener;
 	}
 
 	public void onRequestPermissionResult(int requestCode, String[] permissions,

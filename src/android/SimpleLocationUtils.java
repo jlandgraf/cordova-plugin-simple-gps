@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.coolprofs.cordova.gpslocation;
+package com.coolprofs.cordova.simplegpslocation;
 
 /**
  * Defines app-wide constants and utilities
  */
-public final class LocationUtils {
+public final class SimpleLocationUtils {
 
 	// Debugging tag for the application
 	public static final String APPTAG = "CPGPSlocationPlugin";
