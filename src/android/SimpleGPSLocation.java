@@ -30,15 +30,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.pm.PackageManager;
 import android.Manifest;
-import android.os.Build;
+
+import android.content.pm.PackageManager;
 import android.content.Context;
 
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Looper;
 
 import android.util.Log;
 
@@ -48,6 +52,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	public static int POSITION_UNAVAILABLE = 2;
 	public static int TIMEOUT = 3;
 
+	private static final String TAG = "SimpleLocationPlugin";
 	private static final long MIN_UPDATE_INTERVAL_IN_MS = 1 * 1000;
   private static final float MIN_UPDATE_DISTANCE_IN_M = 0;
 
@@ -250,25 +255,25 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			mListener = new LocationListener() {
 				@Override
 				public void onLocationChanged(Location location) {
-					Log.d(LocationUtils.APPTAG, "The location has been updated!");
-					win(location);
+					Log.d(TAG, "The location has been updated!");
+					win(location, false);
 				}
 
 				@Override
 				public void onProviderDisabled(String provider) {
 					if (LocationManager.GPS_PROVIDER.equals(provider)) {
-						fail(POSITION_UNAVAILABLE, "GPS provider has been disabled.");
+						fail(POSITION_UNAVAILABLE, "GPS provider has been disabled.", false);
 					}
 				}
 
 				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {
-					Log.d(LocationUtils.APPTAG, "Provider " + provider + " status changed to " + status);
+					Log.d(TAG, "Provider " + provider + " status changed to " + status);
 				}
 
 				@Override
 				public void onProviderEnabled(String provider) {
-					Log.d(LocationUtils.APPTAG, "Provider " + provider + " has been enabled.");
+					Log.d(TAG, "Provider " + provider + " has been enabled.");
 				}
 			};
 		}
