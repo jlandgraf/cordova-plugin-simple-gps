@@ -49,8 +49,8 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             <clobbers target="Position" />
         </js-module>
 
-        <js-module src="www/GPSLocation.js" name="GPSLocation">
-            <clobbers target="GPSLocation" />
+        <js-module src="www/GPSLocation.js" name="SimpleGPSLocation">
+            <clobbers target="SimpleGPSLocation" />
         </js-module>
 
         <config-file target="res/xml/config.xml" parent="/*">
