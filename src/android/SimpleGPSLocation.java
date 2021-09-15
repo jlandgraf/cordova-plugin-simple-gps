@@ -113,9 +113,8 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		}
 
 		if (action.equals("getLocation")) {
-			getLastLocation(args, _context);
+			getLastLocation(args);
 		}
-
 		return true;
 	}
 
@@ -135,15 +134,6 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	public void onReset() {
 		this.onDestroy();
 	}
-
-  @Override
-  protected void onPause() {
-      // Stop location updates while the app is in background
-      mLocationManager.removeUpdates(mListener);
-      super.onPause();
-  }
-
-
 
 	public JSONObject returnLocationJSON(Location loc) {
 		JSONObject o = new JSONObject();
