@@ -74,6 +74,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	public void initialize(CordovaInterface cordova, CordovaWebView webView) {
 		super.initialize(cordova, webView);
 		mLocationManager = (LocationManager) cordova.getActivity().getSystemService(Context.LOCATION_SERVICE);
+		initializeLocationListener();
 	}
 
 	/**
@@ -244,12 +245,11 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				_context.sendPluginResult(result);
 		} else {
 				/* start listening */
-				initListener();
 		    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
 		}
 	}
 
-	private void initListener() {
+	private void initializeLocationListener() {
 		if (mListener == null) {
 			mListener = new LocationListener() {
 				@Override
