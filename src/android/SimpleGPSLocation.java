@@ -224,7 +224,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		}
 
 		Criteria criteria = new Criteria();
-    criteria.setAccuracy(Criteria.ACCURACY_HIGH);
+    //criteria.setAccuracy(Criteria.ACCURACY_HIGH);
     //criteria.setPowerRequirement(Criteria.POWER_LOW);
     //criteria.setAltitudeRequired(false);
     //criteria.setBearingRequired(false);
