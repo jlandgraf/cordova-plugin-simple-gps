@@ -135,6 +135,16 @@ public class SimpleGPSLocation extends CordovaPlugin {
     mLocationManager.removeUpdates(mListener);
 	}
 
+	public void onResume(boolean multitasking) {
+		super.onResume(multitasking);
+		initializeLocationListener();
+  }
+
+  public void onPause(boolean multitasking) {
+  	super.onPause(multitasking);
+		this.onDestroy();
+  }
+
 	/**
 	 * Called when the view navigates. Stop the listeners.
 	 */
