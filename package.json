@@ -1,0 +1,25 @@
+{
+  "name": "cordova-plugin-simple-gpslocation",
+  "version": "1.0.0",
+  "description": "Android geolocation plugin using GPS provider",
+  "cordova": {
+    "id": "cordova-plugin-simple-gps",
+    "platforms": [
+      "android"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jlandgraf/cordova-plugin-simple-gps.git"
+  },
+  "keywords": [
+    "cordova",
+    "geolocation",
+    "android",
+    "gps",
+    "ecosystem:cordova",
+    "cordova-android"
+  ],
+  "author": "jlandgraf",
+  "license": "Apache 2.0"
+}
