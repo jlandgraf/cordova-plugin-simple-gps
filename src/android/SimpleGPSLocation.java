@@ -283,7 +283,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				public void onProviderEnabled(String provider) {
 					Log.d(TAG, "Provider " + provider + " has been enabled.");
 				}
-			}
+			};
 		}
 	}
 
