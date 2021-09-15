@@ -93,7 +93,6 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			final CallbackContext callbackContext) {
 
 		_context = callbackContext;
-		final String id = args.optString(0, "");
 
 		if (action == null || !action.matches("getLocation|getPermission")) {
 			fail(99, "unknown action", false);
@@ -167,8 +166,8 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			o.put("timestamp", loc.getTime());
 		} catch (JSONException e) {
 			e.printStackTrace();
+			o.put("json_error", e.printStackTrace());
 		}
-
 		return o;
 	}
 
@@ -265,7 +264,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				@Override
 				public void onLocationChanged(Location location) {
 					Log.d(TAG, "The location has been updated!");
-					win(location, false);
+					win(location, true);
 				}
 
 				@Override
