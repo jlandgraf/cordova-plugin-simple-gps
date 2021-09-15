@@ -104,7 +104,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		_context = callbackContext;
 
 		if (action == null || !action.matches("getLocation|getPermission")) {
-			fail(99, "unknown action", false);
+			fail(99, "unknown action");
 			return false;
 		}
 
@@ -126,7 +126,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 
 		/* only GPS check */
 		if (!isProviderEnabled()) {
-				fail(POSITION_UNAVAILABLE, "GPS is disabled on this device.", false);
+				fail(POSITION_UNAVAILABLE, "GPS is disabled on this device.");
 				return true;
 		}
 
@@ -179,10 +179,10 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		return o;
 	}
 
-	public void win(Location loc, boolean keepCallback) {
+	public void win(Location loc) {
 		PluginResult result = new PluginResult(PluginResult.Status.OK,
 				this.returnLocationJSON(loc));
-		result.setKeepCallback(keepCallback);
+		result.setKeepCallback(true);
 		_context.sendPluginResult(result);
 	}
 
@@ -192,7 +192,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	 * @param msg  The error message
 	 * @throws JSONException
 	 */
-	public void fail(int code, String msg, boolean keepCallback) {
+	public void fail(int code, String msg) {
 		JSONObject obj = new JSONObject();
 		String backup = null;
 		try {
@@ -210,7 +210,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			result = new PluginResult(PluginResult.Status.ERROR, backup);
 		}
 
-		result.setKeepCallback(keepCallback);
+		result.setKeepCallback(true);
 		_context.sendPluginResult(result);
 	}
 
@@ -258,8 +258,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		if ((last != null) 
 				&& (useLastLocation || ((System.currentTimeMillis() - last.getTime()) <= maximumAge))) 
 		{
-				PluginResult result = new PluginResult(PluginResult.Status.OK, returnLocationJSON(last));
-				_context.sendPluginResult(result);
+				win(last);
 		} else {
 				/* start listening */
 		    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
@@ -272,26 +271,26 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				@Override
 				public void onLocationChanged(Location location) {
 					Log.d(TAG, "The location has been updated!");
-					win(location, true);
+					win(location);
 				}
 
 				@Override
 				public void onProviderDisabled(String provider) {
 					if (LocationManager.GPS_PROVIDER.equals(provider)) {
-						fail(POSITION_UNAVAILABLE, "GPS provider has been disabled.", false);
+						fail(POSITION_UNAVAILABLE, "GPS provider has been disabled.");
 					}
 				}
 
 				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {
 					Log.d(TAG, "Provider " + provider + " status changed to " + status);
-					fail(POSITION_UNAVAILABLE, "Provider " + provider + " status changed to " + status, false);
+					fail(POSITION_UNAVAILABLE, "Provider " + provider + " status changed to " + status);
 				}
 
 				@Override
 				public void onProviderEnabled(String provider) {
 					Log.d(TAG, "Provider " + provider + " has been enabled.");
-					fail(POSITION_UNAVAILABLE, "Provider " + provider + " has been enabled ", false);
+					fail(POSITION_UNAVAILABLE, "Provider " + provider + " has been enabled ");
 				}
 			};
 		}
