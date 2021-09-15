@@ -65,7 +65,6 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             <uses-feature android:name="android.hardware.location.gps" />
         </config-file>
 
-        <source-file src="src/android/SimpleLocationListener.java" target-dir="src/com/coolprofs/cordova/simplegpslocation" />
         <source-file src="src/android/SimpleGPSLocation.java" target-dir="src/com/coolprofs/cordova/simplegpslocation" />
         <source-file src="src/android/SimpleLocationUtils.java" target-dir="src/com/coolprofs/cordova/simplegpslocation" />
     </platform>
