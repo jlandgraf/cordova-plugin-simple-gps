@@ -254,11 +254,11 @@ public class SimpleGPSLocation extends CordovaPlugin {
 
 
 	private void startListening(String provider) {
-			createListener();
+			initListener();
 	    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
 	}
 
-	private void createListener() {
+	private void initListener() {
 		if (mListener == null) {
 			mListener = new LocationListener() {
 				@Override
@@ -283,6 +283,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				public void onProviderEnabled(String provider) {
 					Log.d(TAG, "Provider " + provider + " has been enabled.");
 				}
+			}
 		}
 	}
 
