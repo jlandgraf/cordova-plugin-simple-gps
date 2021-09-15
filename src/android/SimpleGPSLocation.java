@@ -60,7 +60,11 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	private LocationManager mLocationManager;
 	CallbackContext _context;
 
-	String [] permissions = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
+	String [] permissions = { Manifest.permission.ACCESS_COARSE_LOCATION, 
+		Manifest.permission.ACCESS_FINE_LOCATION,
+		Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+		Manifest.permission.FOREGROUND_SERVICE 
+	};
 
 	LocationManager getLocationManager() {
 		return mLocationManager;
@@ -220,7 +224,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		}
 
 		Criteria criteria = new Criteria();
-    //criteria.setAccuracy(Criteria.ACCURACY_HIGH);
+    criteria.setAccuracy(Criteria.ACCURACY_HIGH);
     //criteria.setPowerRequirement(Criteria.POWER_LOW);
     //criteria.setAltitudeRequired(false);
     //criteria.setBearingRequired(false);
@@ -240,14 +244,9 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				_context.sendPluginResult(result);
 		} else {
 				/* start listening */
-				startListening(provider);	
+				initListener();
+		    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
 		}
-	}
-
-
-	private void startListening(String provider) {
-			initListener();
-	    mLocationManager.requestLocationUpdates(provider, MIN_UPDATE_INTERVAL_IN_MS, MIN_UPDATE_DISTANCE_IN_M, mListener);
 	}
 
 	private void initListener() {
@@ -269,11 +268,13 @@ public class SimpleGPSLocation extends CordovaPlugin {
 				@Override
 				public void onStatusChanged(String provider, int status, Bundle extras) {
 					Log.d(TAG, "Provider " + provider + " status changed to " + status);
+					fail(POSITION_UNAVAILABLE, "Provider " + provider + " status changed to " + status, false);
 				}
 
 				@Override
 				public void onProviderEnabled(String provider) {
 					Log.d(TAG, "Provider " + provider + " has been enabled.");
+					fail(POSITION_UNAVAILABLE, "Provider " + provider + " has been enabled ", false);
 				}
 			};
 		}
