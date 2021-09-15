@@ -53,7 +53,7 @@ public class SimpleGPSLocation extends CordovaPlugin {
 
 	private LocationListener mListener;
 	private LocationManager mLocationManager;
-	CallbackContext _context;....
+	CallbackContext _context;
 
 	String [] permissions = { Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION };
 
@@ -304,18 +304,5 @@ public class SimpleGPSLocation extends CordovaPlugin {
 	  }
 	  return true;
 	}
-
-	/*
-	 * We override this so that we can access the permissions variable, which no longer exists in
-	 * the parent class, since we can't initialize it reliably in the constructor!
-	 */
-	/*
-	@Override
-	public void requestPermissions(int requestCode)
-	{
-	    PermissionHelper.requestPermissions(this, requestCode, permissions);
-	}
-	*/
-
 
 }
