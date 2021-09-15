@@ -79,7 +79,7 @@ var SimpleGPSLocation = {
 	getCurrentPosition: function (successCallback, errorCallback, options) {
 		console.log('getCurrentPosition called');
 		console.log(options);
-		argscheck.checkArgs('fFO', 'GPSLocation.getCurrentPosition', arguments);
+		argscheck.checkArgs('fFO', 'SimpleGPSLocation.getCurrentPosition', arguments);
 		options = parseParameters(options);
 
 		// Timer var that will fire an error callback if no position is retrieved from native
@@ -113,7 +113,7 @@ var SimpleGPSLocation = {
 				velocity: p.velocity,
 				altitudeAccuracy: p.altitudeAccuracy
 			}, (p.timestamp === undefined ? new Date() : ((p.timestamp instanceof Date) ? p.timestamp : new Date(p.timestamp))));
-			GPSLocation.lastPosition = pos;
+			SimpleGPSLocation.lastPosition = pos;
 			successCallback(pos);
 		};
 		var fail = function (e) {
@@ -127,9 +127,9 @@ var SimpleGPSLocation = {
 			}
 		};
 
-		if (GPSLocation.lastPosition && options.maximumAge && (((new Date()).getTime() - GPSLocation.lastPosition.timestamp.getTime()) <= options.maximumAge)) {
+		if (SimpleGPSLocation.lastPosition && options.maximumAge && (((new Date()).getTime() - SimpleGPSLocation.lastPosition.timestamp.getTime()) <= options.maximumAge)) {
 			console.log('returning cached last Position');
-			successCallback(GPSLocation.lastPosition);
+			successCallback(SimpleGPSLocation.lastPosition);
 			// If the cached position check failed and the timeout was set to 0, error out with a TIMEOUT error object.
 		} else if (options.timeout === 0) {
 			console.log('error because of timeout = 0');
