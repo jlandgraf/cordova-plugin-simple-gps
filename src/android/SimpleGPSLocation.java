@@ -175,7 +175,6 @@ public class SimpleGPSLocation extends CordovaPlugin {
 			o.put("timestamp", loc.getTime());
 		} catch (JSONException e) {
 			e.printStackTrace();
-			o.put("json_error", e.printStackTrace());
 		}
 		return o;
 	}
