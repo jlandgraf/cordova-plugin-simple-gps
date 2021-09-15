@@ -49,7 +49,7 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             <clobbers target="Position" />
         </js-module>
 
-        <js-module src="www/GPSLocation.js" name="SimpleGPSLocation">
+        <js-module src="www/SimpleGPSLocation.js" name="SimpleGPSLocation">
             <clobbers target="SimpleGPSLocation" />
         </js-module>
 
