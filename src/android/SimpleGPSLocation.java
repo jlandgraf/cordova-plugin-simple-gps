@@ -75,14 +75,10 @@ public class SimpleGPSLocation extends CordovaPlugin {
 		super.initialize(cordova, webView);
 
 
-		//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+		android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
     // We are running a Looper to allow the Cordova CallbackContext to be passed within the Thread as a message.
-    if(Looper.myLooper() == null){
-						mLocationManager = (LocationManager) cordova.getActivity().getSystemService(Context.LOCATION_SERVICE);
-            Looper.prepare();
-            initializeLocationListener();
-            Looper.loop();
-    } 
+		mLocationManager = (LocationManager) cordova.getActivity().getSystemService(Context.LOCATION_SERVICE);
+		initializeLocationListener();
 		
 	}
 
