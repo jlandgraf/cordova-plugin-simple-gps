@@ -155,7 +155,7 @@ var GPSLocation = {
 			var permissionWin = function () {
 				console.log('permission Success' + options.maximumAge +',' + options.useLastLocation);
 	            //var geo = cordova.require('cordova/modulemapper').getOriginalSymbol(window, 'navigator.geolocation'); // eslint-disable-line no-undef
-				exec(win, fail, 'CordovaGPSLocation', 'getLocation', [options.maximumAge, options.useLastLocation]);
+				exec(win, fail, 'SimpleGPSLocation', 'getLocation', [options.maximumAge, options.useLastLocation]);
 	        };
 	        var permissionFail = function () {
 				console.log('Permission Failed');
@@ -163,71 +163,11 @@ var GPSLocation = {
 	                errorCallback(new PositionError(PositionError.PERMISSION_DENIED, 'Illegal Access'));
 	            }
 	        };
-	 		exec(permissionWin, permissionFail, 'CordovaGPSLocation', 'getPermission', []);
+	 		exec(permissionWin, permissionFail, 'SimpleGPSLocation', 'getPermission', []);
 		}
 		//console.log('returning timeoutTimer');
 		return timeoutTimer;
 	},
-	/**
-	 * Asynchronously watches the geolocation for changes to geolocation.  When a change occurs,
-	 * the successCallback is called with the new location.
-	 *
-	 * @param {Function} successCallback    The function to call each time the location data is available
-	 * @param {Function} errorCallback      The function to call when there is an error getting the location data. (OPTIONAL)
-	 * @param {PositionOptions} options     The options for getting the location data such as frequency. (OPTIONAL)
-	 * @return String                       The watch id that must be passed to #clearWatch to stop watching.
-	 */
-	watchPosition: function (successCallback, errorCallback, options) {
-		argscheck.checkArgs('fFO', 'GPSLocation.getCurrentPosition', arguments);
-		options = parseParameters(options);
-
-		var id = utils.createUUID();
-
-		// Tell device to get a position ASAP, and also retrieve a reference to the timeout timer generated in getCurrentPosition
-		timers[id] = GPSLocation.getCurrentPosition(successCallback, errorCallback, options);
-
-		var fail = function (e) {
-			clearTimeout(timers[id].timer);
-			var err = new PositionError(e.code, e.message);
-			if (errorCallback) {
-				errorCallback(err);
-			}
-		};
-
-		var win = function (p) {
-			clearTimeout(timers[id].timer);
-			if (options.timeout !== Infinity) {
-				timers[id].timer = createTimeout(fail, options.timeout);
-			}
-			var pos = new Position({
-				latitude: p.latitude,
-				longitude: p.longitude,
-				altitude: p.altitude,
-				accuracy: p.accuracy,
-				heading: p.heading,
-				velocity: p.velocity,
-				altitudeAccuracy: p.altitudeAccuracy
-			}, (p.timestamp === undefined ? new Date() : ((p.timestamp instanceof Date) ? p.timestamp : new Date(p.timestamp))));
-			GPSLocation.lastPosition = pos;
-			successCallback(pos);
-		};
-
-		exec(win, fail, "CordovaGPSLocation", "addWatch", [id]);
-
-		return id;
-	},
-	/**
-	 * Clears the specified heading watch.
-	 *
-	 * @param {String} id       The ID of the watch returned from #watchPosition
-	 */
-	clearWatch: function (id) {
-		if (id && timers[id] !== undefined) {
-			clearTimeout(timers[id].timer);
-			timers[id].timer = false;
-			exec(null, null, "GPSLocation", "clearWatch", [id]);
-		}
-	}
 };
 
 module.exports = GPSLocation;
